@@ -1,6 +1,36 @@
 # Deep-Learning-Skills
 This Repository details my Skills in Deep Learning
 
+### Very Very Important: In ANN, we create a sequential model, then we add dense layers (neurons), apply activation functions, specify optimizer, loss function, and metrics, and finally store logs for TensorBoard visualization.
+
+### Very Very Important: Please go and see "B) End to End ANN Project"; For detailed working of ANN with Project Notes; It will be very useful
+
+## Input Layer connected to HL1 alone should be written with input_shape = Dense(64,activation='relu',input_shape=(X_train.shape[1],))
+
+##  Now in the second hidden layer, we can use: "model.add(Dense(32, activation='relu'))"; Here we do not need to specify the input shape again, because the Sequential model automatically connects the previous layer to the next. Finally, for the output layer, since it is a binary classification, we will have one output neuron with a sigmoid activation function: "model.add(Dense(1, activation='sigmoid'))"
+
+## Output of "model.summary" shows that the total number of parameters is 2945, which is a combination of all weights and biases in the layers. This confirms our model architecture.
+
+## In order to perform forward and backward propagation, we need to compile the model. We do this by writing: "model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])"; Here, the optimizer is Adam, the loss function is binary cross-entropy since this is a binary classification problem, and the metrics we track is accuracy. In case it was a multi-class classification, we would use sparse categorical cross-entropy as the loss function.; Here, the optimizer is Adam, the loss function is binary cross-entropy since this is a binary classification problem, and the metrics we track is accuracy. In case it was a multi-class classification, we would use sparse categorical cross-entropy as the loss function.  (**See below notes for more detail)**
+
+## Similarly, tensorflow.keras.losses can be used to set the loss function. Various losses are available such as BinaryCrossentropy and CategoricalCrossentropy. For instance, BinaryCrossentropy can be used directly and stored in a variable like loss. That particular loss can then be applied during compilation, just like the optimizer. Both direct usage of the keyword and explicit initialization are possible.
+
+## Next, TensorBoard can be set up, since training has not yet started. Once training is completed, logs can be captured and visualized. For this purpose, a log directory must be created. A folder such as log/fit is created. A datetime format is then used with datetime.now().strftime(...) to generate a unique directory name for storing logs. This ensures that whenever training occurs, logs will be stored in this folder; TensorBoard can be initialized with the log directory and additional parameters such as histogram_freq=1 to create histogram diagrams. After correcting syntax errors (e.g., using from instead of incorrect import syntax), this setup works correctly.
+
+## In addition, early stopping is configured. Early stopping is used because training a neural network can involve many epochs (e.g., 100 epochs), but sometimes after a smaller number of epochs (e.g., 20), the model may stop improving significantly. Monitoring the loss value helps identify when further training is unnecessary. If the loss value does not decrease for several epochs, training can stop early to save resources; An early stopping callback is created by monitoring val_loss. Patience can be set, for example, to 5 epochs, meaning training will only stop if no improvement is seen for 5 epochs. The parameter restore_best_weights=True ensures that the best weights obtained during training are reloaded when early stopping is triggered.
+
+## At this point, the model is ready for training. The model has been created, optimizers and loss functions have been assigned along with metrics, TensorBoard has been set up to record logs, and both TensorBoard and early stopping callbacks have been defined.
+
+## Training is performed with: history = model.fit( x_train, y_train, validation_data=(x_test, y_test), epochs=100, callbacks=[tensorboard_callback, early_stopping_callback] ); Here, y_test is used for comparison with respect to accuracy. Although training is requested for 100 epochs, early stopping may stop it earlier.
+
+## During execution, epochs begin, and accuracy along with validation accuracy is displayed. Even though 100 epochs are set, training may stop earlier, for example after 7 epochs, due to early stopping. If patience is increased to 10, then training continues further, stopping at around epoch 16 or 17. The results show values such as training accuracy reaching 87%, validation loss values, and validation accuracy of around 0.85. These values confirm that the neural network is trained effectively.
+
+## Finally, the trained model can be saved. Using model.save("model.h5"), the model is saved into an .h5 file, which is compatible with Keras.
+
+## The TensorBoard extension can be loaded in order to visualize training logs. To begin, the TensorBoard extension is loaded using the command load_ext tensorboard. Initially, an attempt is made to use load_extension, but the correct syntax is load_ext. Once this is executed correctly, the TensorBoard session is launched; After launching TensorBoard, the log directory must be specified. The log directory contains the folder logs/fit, which holds information about training and validation. Loading TensorBoard with this directory displays the results in a visualized format.
+
+#### For rest of the above project, B) End-to-End ANN Project, please see below, it have very detailed end to end notes from the project for great understanding
+
 ### Now, Keras is an API integrated with Tensorflow; Earlier there was a Problem of writing too much code using Tensforflow; Keras made the integration and made it easier
 
 ### Mlflow also Supports Tensorflow
@@ -16,6 +46,8 @@ space={
 }
 
 ## In ANN, Krish Got one error on write and fixed using "geo_encoded_df = pd.DataFrame(geo_encoded.toarray()" (For merging encoded geo dataframe with main dataframe)
+
+## In ANN, let's say we hvae input I two inputs, in the first hidden layer I have three nodes, in the second hidden layer I have two nodes, and finally I have one output node. This neural network will perform forward propagation and backward propagation. In TensorFlow we basically call this a sequential model. An ANN is nothing but a sequential model, and in this sequential model we will be performing forward propagation and backward propagation, and all these nodes will be interconnected. The input will be connected to the hidden layer, the hidden layers will be connected to each other, and finally to the output.
 
 ### From HyperOpt we used hp; It is like Hyperparameter Tuning
 
