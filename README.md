@@ -15,6 +15,8 @@ space={
 
 }
 
+## In ANN, Krish Got one error on write and fixed using "geo_encoded_df = pd.DataFrame(geo_encoded.toarray()" (For merging encoded geo dataframe with main dataframe)
+
 ### From HyperOpt we used hp; It is like Hyperparameter Tuning
 
 A) Deep Learning ANN Model with MLFlow
@@ -320,7 +322,7 @@ So here you have everything: LabelEncoder pickle, OneHotEncoder pickle, and Stan
 
 In short, what I have done so far is clean the dataset, apply feature engineering, divide data into independent and dependent features, encode categorical variables (LabelEncoder + OneHotEncoder), and scale numerical variables (StandardScaler). Finally, I saved all the preprocessing objects as pickle files. Now my data is ready. On this data, I will go ahead and train my Artificial Neural Network, which I will show in the next step.
 
-### **3**
+### **3. Step By Step Training With ANN With Optimizer and Loss Functions**
 
 Right now we will go ahead and train an artificial neural network, and that is what we are going to see — how we are going to train this and all. We’ll be discussing about that in detail. So first of all we will go ahead and import TensorFlow. Since we are going to just use TensorFlow as an alias, we will import it as tf, and tf is the alias that we will be specifically using.
 
