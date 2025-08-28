@@ -1,6 +1,8 @@
 # Deep-Learning-Skills
 This Repository details my Skills in Deep Learning
 
+### Now, Keras is an API integrated with Tensorflow; Earlier there was a Problem of writing too much code using Tensforflow; Keras made the integration and made it easier
+
 ### Mlflow also Supports Tensorflow
 
 ## log the model using TensorFlow - mlflow.tensorflow.log_model(model,"model",signature=signature)
@@ -17,6 +19,7 @@ space={
 
 A) Deep Learning ANN Model with MLFlow
 
+B) End to End ANN Project
 
 
 
@@ -243,3 +246,38 @@ with mlflow.start_run():
 ### We can also do using PyFunc Load_Model
 
 ### We can also register model using Code: mlflow.register_model(model_uri, "name_we_want_to_give"); If we go to models, it will automatically be registered, as we wrote code
+
+
+
+
+### B) End to End ANN Project
+
+### 1. Problem Statement and VS Code Setup:
+
+In this series, the goal is to build an end-to-end deep learning project where we train an Artificial Neural Network (ANN). The two main libraries we’ll use are TensorFlow and Keras. TensorFlow is an open-source library that allows us to create deep learning projects from start to finish, and it comes with powerful features to build different types of neural networks such as ANN, RNN, LSTM, GRU, and even Transformers.
+
+A common question is whether it’s necessary to learn both TensorFlow and PyTorch. The advice is that you don’t need to master both. Instead, focus on becoming skilled in just one of them. Since both are open-source and widely used, you can always switch between frameworks later, especially when working with Generative AI models where conversions between PyTorch and TensorFlow are possible. For this project, the focus will be on TensorFlow.
+
+Along with TensorFlow, we’ll use Keras, which is an API integrated into TensorFlow. While TensorFlow by itself requires writing a lot of code to build models, Keras simplifies this process by providing high-level APIs that let you define and train models with just a few lines of code. Keras makes it easy to create sequential networks, RNNs, LSTMs, and more. Even though Keras can also work with JAX and PyTorch, in this course we’ll stick with TensorFlow.
+
+### The problem statement we’ll work on involves a dataset called churn_modelling.csv, which comes from a bank. The goal is to predict whether a customer will leave the bank or not (a binary classification problem). The dataset includes features such as credit score, geography, gender, age, tenure, balance, number of products, credit card ownership, activity status, and estimated salary. 
+
+### The target column is “exited,” which indicates if a customer left the bank.
+
+The project steps will be as follows:
+
+(i) First, we’ll perform basic feature engineering, such as converting categorical variables to numerical ones and standardizing values.
+
+#### (ii) Then, we’ll build our ANN model. For example, if there are 11 features, the input layer will have 11 nodes, followed by one or more hidden layers, and finally an output layer with one node for binary classification.
+
+(iii) We’ll also introduce dropout, which temporarily disables some nodes during training to reduce overfitting.
+
+(iv) Training will involve forward propagation, calculating the loss, and updating weights using optimizers, all of which we’ll implement using TensorFlow and Keras.
+
+(v) Once the model is trained, we’ll learn how to save it in formats like pickle (.pkl) or H5 (.h5), which store the model architecture and weights for reuse and deployment. 
+
+### Deployment will be done through Streamlit, where we’ll build a simple web app, integrate our trained model, and then deploy the app on the Streamlit cloud.
+
+(vi) Before starting, we’ll set up a Python environment locally using conda. After creating the environment, we’ll install the required libraries listed in a requirements.txt file, which will include TensorFlow (version 2.15.0), Pandas, NumPy, Scikit-learn, TensorBoard, Matplotlib, and Streamlit. TensorFlow will run on CPU for this project since the dataset is small, but for larger and more complex projects, we’ll switch to Google Colab or a machine with GPU support.
+
+In summary, this project will cover everything step by step: preprocessing the data, building and training an ANN using TensorFlow and Keras, applying techniques like dropout, saving and deploying the model, and finally integrating it into a Streamlit app for real-world use.
