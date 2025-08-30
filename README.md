@@ -1349,3 +1349,83 @@ This session demonstrates an end-to-end project workflow: from embeddings, prepr
 
 ### Summary:
 
+(i) Creating the Streamlit App: 
+
+(a) After training the simple RNN and saving the H5 model, the next step is to create a Streamlit web application.
+
+(b) Create a file named "main.py" to combine all functionality from the previous "prediction.ipynb" file.
+
+(c) Functionality includes: Loading the trained model ("simple_RNN_imdb.h5"), Decoding reviews, Preprocessing input text, Making predictions
+
+(ii) Importing Libraries and Loading Model
+
+(a) Importing Necessary Libraries: "import streamlit as st"; "from tensorflow.keras.models import load_model"; "from tensorflow.keras.preprocessing import sequence"; "from tensorflow.keras.datasets import imdb"
+
+(b) Load word index for converting reviews into integer indices.
+
+(c) Define helper functions: "decode_review" → converts integer-encoded sequences back to words; "preprocess_text" → pads sequences to maximum length used during training
+
+(iii) Prediction Function: "def predict_sentiment(review):
+    preprocessed_input = preprocess_text(review)
+    prediction = model.predict(preprocessed_input)
+    sentiment = "positive" if prediction[0][0] > 0.5 else "negative"
+    return sentiment, prediction"
+
+(a) Preprocesses review
+
+(b) Passes it through the model
+
+(c) Determines sentiment based on threshold 0.5
+
+(iv) Streamlit App Interface
+
+(a) Import Streamlit: "import streamlit as st"
+
+(b) Set title and description: "st.title("IMDb Movie Review Sentiment Analysis")"; "st.write("Enter a movie review to classify it as positive or negative.")"
+
+(c) Create a user input area: "user_input = st.text_area("Enter your movie review:")"
+
+(d) Add a button to trigger prediction: "if st.button("Classify"):
+    processed_input = preprocess_text(user_input)
+    prediction = model.predict(processed_input)
+    sentiment = "positive" if prediction[0][0] > 0.5 else "negative"
+    st.write(f"Sentiment: {sentiment}")
+    st.write(f"Prediction score: {prediction[0][0]}")
+else:
+    st.write("Please enter a movie review.")" 
+
+(e) Ensures the review is preprocessed, passed through the model, and sentiment + score are displayed.
+
+(f) Optional: show a sample review using "decode_review"
+
+(v) Running the App: 
+
+(a) Navigate to the folder containing "main.py" in the terminal.
+
+(b) Execute: "streamlit run main.py"
+
+(c) The app will open in a browser.
+
+(d) Example inputs and expected outputs:
+
+Positive review: "The movie was fantastic. The acting was great, and the plot was thrilling" → Sentiment: positive, Prediction score: ~0.811
+
+Negative review: "The movie was scary. I did not like it, but the critics liked it" → Sentiment: negative, Prediction score < 0.5
+
+(e) Mixed reviews also return a prediction score, reflecting model confidence.
+
+(vi) Next Step: Deployment
+
+(a) Upload all project files to GitHub.
+
+(b) Deploy the app on Streamlit Cloud for public access.
+
+(c) This step is left as an assignment for practice.
+
+(vii) End-to-End Workflow Demonstrated:
+
+(a) From word embeddings, preprocessing, and training the simple RNN, 
+
+(b) To saving the model, making predictions,
+
+(c) And finally creating a Streamlit web app ready for deployment.
