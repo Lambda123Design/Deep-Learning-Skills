@@ -79,6 +79,8 @@ We can see how the words in the first sentence are converted to vectors. The sec
 
 Thus, the embedding layer works by converting word indexes into dense vector representations. We don’t even need to manually train at this stage because the embedding layer already handles vector creation. It takes the vocabulary size, embedding dimensions, and input length.
 
+## Different ways to create neural network: Function (Functional API - Flexible, harder to interpret), Sequential (Sequential API - nn.Sequential). There are also different ways to define neural networks in PyTorch. The Functional API is a flexible approach where we directly define operations on tensors, allowing for more customization. The Sequential API is a structured approach where layers are stacked in a linear order using torch.nn.Sequential, making it simpler to define straightforward models. [From Computer Vision Notes]
+
 #### Table of Contents:
 
 A) Deep Learning ANN Model with MLFlow
