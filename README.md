@@ -1,6 +1,12 @@
 # Deep-Learning-Skills
 This Repository details my Skills in Deep Learning
 
+## Befor DL Model Training, we need to Compile it; The reason of compiling is that because we need to assign, what is the optimizer function that we need to use, loss and metrics
+
+## If we don't have any powerful machines to run DL Models we can use Google Colab's GPU Feature
+
+### ML Models use Pickle files; DL Models using ".h5" files
+
 ### Very Very Important: In ANN, we create a sequential model, then we add dense layers (neurons), apply activation functions, specify optimizer, loss function, and metrics, and finally store logs for TensorBoard visualization.
 
 ### Very Very Important: Please go and see "B) End to End ANN Project"; For detailed working of ANN with Project Notes; It will be very useful
@@ -53,6 +59,26 @@ space={
 
 #### For Finding Optimal Hidden Layers and Hidden Neurons in ANN -Heuristics and rules of thumb also play an important role in providing a good starting point. For example, one rule suggests that the number of neurons in the hidden layer should be between the size of the input layer and the size of the output layer. A common practice is also to begin with one or two hidden layers before increasing further. To make this process more practical, one useful approach is to perform hyperparameter tuning by trying out various numbers of neurons and hidden layers, and then observing which combination provides the best model
 
+#### Very Very Important: In One-Hot Representation, for "Cup of Glass" and "Cup of Milk", only the dimension of last index alone changes and for rest it is same;
+
+#### The word the is represented by the index 6186, glass by 6775, of by 637, and milk by 4895. This means that if we expand this into a vector of dimension 10,000, at index 637 we will have 1 and the rest will be 0. Similarly for the other words.This is what one-hot representation is: for every word, one index is marked with 1 and the rest are zeros. But we are not going to use the entire sparse vectors (which are mostly zeros) because in our embedding layer we use these indexes instead. So every word in the sentence is represented by one index. Now notice something: “The glass of milk” and “The glass of juice.” In these two sentences, the vectors for “the,” “glass,” and “of” remain the same. Only the word “milk” is replaced with “juice,” meaning only the index for the last word changes.
+
+### Recommendation Systems use Cosine Similarity
+
+#### Word Embeddings and RNN - In word embedding, if we take all these vectors and apply PCA (Principal Component Analysis) to reduce, say, 300 dimensions into 2 dimensions, we can plot them. Words like man and human will appear close to each other. Similarly king and queen will be close, woman and queen close, and fruits like apple and mango will also appear nearby. This is very important because cosine similarity can then be applied. Cosine similarity allows us to find which words or vectors are close. This concept is used in recommendation systems. For example, if someone watches an action movie, they should be recommended another action movie. So, instead of using sparse one-hot vectors, we convert words into indexes and then pass them into the embedding layer.
+
+#### Very Important Padding in RNN: In RNN word embeddings we need to make sure that all sentences are of same dimensions; so we need padding, so: "from tensorflow.keras.utils import pad_sequences"; Additionally, we import Sequential:"from tensorflow.keras.models import Sequential";Now let us understand what pad_sequences means. Each sentence has a different number of words. Some sentences have four words, some five, some six, etc. For training in an RNN, all sentences must be of equal length, otherwise they cannot be processed at fixed timesteps. To achieve this, we set a maximum sentence length (say, 8) and pad shorter sentences with zeros. For example, if a sentence has 5 words, 3 zeros are added to make it 8. Padding can be pre-padding (zeros added in front) or post-padding (zeros added at the end).The code:"embedded_docs = pad_sequences(onehot_repr, padding='pre', maxlen=sent_length)"; Now all sentences become equal length. After this, we define the embedding dimension. For example, we set the dimension as 10. This means each word will be represented by a 10-dimensional vector.Next, we create the embedding model: "model = Sequential()", "model.add(Embedding(vocab_size, 10, input_length=sent_length))"We then compile the model:"model.compile(optimizer='adam', loss='mse')".If we check the model summary, we can see the number of parameters and the embedding output shape.
+
+### Params will be the Vocubulary Size
+
+Now we can predict embeddings:"model.predict(embedded_docs)"
+
+#### Very Important: This shows every word represented by a 10-dimensional vector. If we check for the first sentence:"model.predict(embedded_docs[0:1])"
+
+We can see how the words in the first sentence are converted to vectors. The second sentence, where only the last word changes, also produces similar vectors except for the last one.
+
+Thus, the embedding layer works by converting word indexes into dense vector representations. We don’t even need to manually train at this stage because the embedding layer already handles vector creation. It takes the vocabulary size, embedding dimensions, and input length.
+
 #### Table of Contents:
 
 A) Deep Learning ANN Model with MLFlow
@@ -62,6 +88,8 @@ B) End to End ANN Project - Classification
 C) End to End ANN Project - Regression
 
 D) Finding Optimal Hidden Layers And Hidden Neurons In ANN
+
+E) End-to-End RNN Project
 
 ### A) Deep Learning ANN Model with MLFlow
 
@@ -861,3 +889,463 @@ So here you can see, oh perfect. The epochs has started and it's running. It's r
 So here you can see accuracy is there, loss is there. And finally, the best accuracy that you got is nothing but 85% using epochs 100, layer 1 and neuron 16. So it is saying that, hey, just go ahead and use one hidden layer and uh, go ahead and use uh 16 neurons and just try to do it and try to find it. Right.So when you use this now you can go ahead and create your own, uh, custom entire ah, uh, your entire Ann, with this many number of layers. And by this you will be able to find out the best parameter.So I hope, uh, you were able to understand this once you get this information, then constructing an Ann becomes very much easy. Right.
 
 So this is what we have actually discussed about determining the optimal number of hidden layers and neurons for an artificial neural network. Again you can try out with different different parameters, but we can use Keras classifier with respect to this.
+
+
+
+#### E) End-to-End RNN Project
+
+**1. Problem Statement**
+
+In this particular video, an end-to-end deep learning project is developed using a simple RNN. The dataset taken is the IMDb dataset, which is nothing but a movie reviews dataset. The main task in this dataset is that there will be some text and some output labels. The text will specifically be the reviews, and the output label will be either positive or negative. With the help of a simple RNN, the model will be trained to perform this specific prediction. The process will not stop here; the entire deployment will also be done in the cloud. Additionally, some training will be performed on the local machine. For those who do not have a powerful machine, the execution can also be carried out in Google Colab. In Google Colab, the model can be created and trained because Google Colab even provides GPUs—free GPUs. The dataset used is not very small; it will have a good number of records, specifically around 50,000 records.
+
+Before creating this end-to-end deep learning project, the overall process is explained. First, the input data is taken, which is the reviews dataset. This data is then processed through feature engineering, also referred to as feature transformation. After this, the data will be prepared so that it can be ingested into the simple RNN for training the entire neural network. Once this step is complete, the simple RNN is built. A simple RNN architecture is chosen, the data is fed into it, and it is trained completely. Once the training is complete, a model file will be obtained, which will be stored in the form of a ".h5" file. The ".h5" file is a format used in deep learning, similar to how in machine learning a pickle file is used. If Keras is used, the model can be converted into a ".h5" file. After this, a Streamlit web app will be created, and then deployment will be carried out.
+
+The fundamental steps in this project include dataset preparation, feature engineering, building the Streamlit web app, and deployment. The major component is training the simple RNN. This simple RNN has two important components. The first is the embedding layer, which also needs to be used here. The concept of the embedding layer is discussed in detail. The second component is the simple RNN itself, which will train the neural network. Both components are essential to use.
+
+The embedding layer is explained in detail. The architecture of a simple RNN is considered. When unfolded with respect to time, the RNN will look like a sequence of layers. This architecture has already been discussed in the theoretical session. It continues until the last layer, and finally, the output is obtained. This output is then passed to a sigmoid or softmax function, and the result is represented as "ŷ". This is the process that is specifically used. Along with this, consider an example of text data from the dataset. Suppose a text is taken with inputs like X11, X12, X13, X14, and the output is 0. Similarly, another sentence may have inputs like X21, X22, X23, X24, and the output is 1. During forward and backward propagation, for every sentence, the words are given one by one. Initially, X11 is given, then at t = 2, X12 is given, followed by X13 and X14. These inputs X11, X12, X13, etc., are words, which must be converted into vectors.
+
+The words need to be converted into vectors with respect to some dimensions, which are passed into the architecture. While the RNN architecture has been discussed, one important aspect not previously covered is how words are converted into vectors in deep learning. This is where the embedding layer comes into play. The embedding layer is responsible for converting words into vectors. The embedding layer uses word embeddings. Word2Vec is an example of a word embedding technique that can be used in the embedding layer.
+
+In the next video, the embedding layer will be explained in detail. The focus will be on how the embedding layer works and the mathematical intuition behind it. Along with the intuition, a practical implementation will also be carried out. Understanding the embedding layer is essential, because without it, it will be very difficult to understand the project. Both the theoretical explanation and practical implementation will be covered.
+
+This serves as an introduction to the end-to-end project. In the next video, word embeddings, the embedding layer, and feature representation will be discussed in detail.
+
+#### Summary:
+
+(i) Project Overview - Developed an end-to-end deep learning project using a Simple RNN on the IMDb movie reviews dataset (~50,000 records).
+
+(ii) Problem Statement - Input = text reviews, Output = sentiment (positive/negative).
+
+(iii) Training Options - Model training performed on local machine; for those without powerful hardware, Google Colab (with free GPUs) can be used.
+
+(iv) Process Explanation - Overall flow: dataset preparation → feature engineering (feature transformation) → feeding data into RNN → training → saving model → Streamlit app → deployment.
+
+(v) Model Saving - Trained model saved as .h5 file (similar to pickle files in ML).
+
+(vi)Streamlit App - Created a web app for interactive prediction and deployment.
+
+(vii) Simple RNN Architecture -
+
+**(a) Component 1: Embedding Layer (converts words into dense vectors).**
+
+**(b) Component 2: Simple RNN Layer (processes sequences and learns dependencies).**
+
+(viii) RNN Concept - Unfolded across time steps; inputs like X11, X12, X13, X14 are fed sequentially → final output passed through sigmoid/softmax → predicted label (ŷ).
+
+(ix) Forward & Backward Propagation - Sentences processed word by word across time steps.
+
+(x) Word Representation - Words must be converted into vectors for the RNN; handled by the Embedding Layer.
+
+(xi) Embedding Layer - Converts words into vector representations (Word2Vec is an example technique).
+
+(xii) Key Insight - Without embeddings, RNN cannot handle text effectively.
+
+(xiii) Next Video - Detailed explanation of embedding layers, word embeddings, mathematical intuition, and practical implementation.
+
+**2. Getting Started With Word Embedding Layers - Understanding Theoritical Intuition**
+
+The idea of word embedding or embedding layer is specifically explained. Word embedding is a technique that converts a word into vectors. In a neural network, this is used as a layer, just like how a dense layer exists. Similarly, there will also be an embedding layer. The main function of the embedding layer is to use some kind of word embedding technique, where it takes an input and converts it into vectors. Word embedding is also called feature representation.
+
+Consider a dataset that contains text and output labels. For example, a sentence may contain inputs X11, X12, X13, X14, and the output is 0. Another sentence may contain inputs X21, X22, X23, X24, and the output is 1. Similarly, a large amount of such data is available. In order to give any input to a neural network, specifically a simple RNN, this kind of representation is required. If an input is given at timestamp t, the words must be converted into vectors using the embedding layer.
+
+One of the earliest and most commonly used processes is one-hot encoding. Initially, if word embedding is not used, one-hot encoding is applied. In one-hot encoding, a vocabulary size is defined, which is the total number of words in the vocabulary. For example, if the vocabulary size is 10,000, then every word will be represented as a vector of 10,000 dimensions. Suppose the word "man" is in the vocabulary. It will be represented as a vector of size 10,000, with all values being zero except at the index where "man" is located, which will be set to one. Similarly, if the word "boy" is located at index 2000, then the vector for "boy" will have a one at index 2000, and all other values will be zero.
+
+This representation is called one-hot representation. However, this technique creates very large vectors filled with zeros and only a single one. This results in a sparse matrix. The problem with sparse matrices is that they lead to overfitting because the data consists of only zeros and ones, with no meaningful calculations. Therefore, one-hot encoding is not efficient, especially with large vocabularies. To overcome this disadvantage, word embedding is used.
+
+Word embedding, such as Word2Vec, is a more efficient method. Word2Vec is a type of word embedding technique that can also be used in the embedding layer. Word embedding creates feature representation for every word in the dataset. For example, suppose the dataset contains words like "boy," "girl," "king," "queen," "apple," and "mango." If the vocabulary size is 10,000, these words will exist at different indices within this vocabulary.
+
+Each word is then converted into vectors with the help of word embedding. For this, a feature representation is chosen, such as a 300-dimensional vector for each word. It is difficult to observe all the features learned by word embeddings, but feature examples can be imagined. For instance, features may include gender, royalty, age, or food. Based on the relationships between these features and the words, vectors are created.
+
+For example, the relationship between "boy" and gender may be represented as -1, while "girl" and gender is +1 because they are opposites. The relationship between "king" and royalty may be represented as 0.95, while "queen" and royalty also have a strong relationship. On the other hand, the relationship between "apple" and gender would be close to zero, since there is no meaningful connection. These relationships are used to form the word vectors.
+
+The embedding layer in the neural network uses these vectors. For example, if a 300-dimensional embedding is chosen, each word is represented as a 300-dimensional vector based on these relationships. When a word is passed to the embedding layer, it is converted into this vector, and then the simple RNN is trained on it.
+
+There are important parameters to remember when using embeddings. One is the vocabulary size, such as 10,000. The other is the feature dimension, such as 300. Word embedding techniques like Word2Vec from Google or "GloVe" also provide pretrained embeddings with 300 dimensions. These parameters are essential.
+
+In the next video, a practical implementation will be shown to demonstrate how word embedding and the embedding layer work. Examples will be taken and converted into vectors using the embedding layer before starting the end-to-end project.
+
+This explanation provides an idea of word embedding, embedding layers, and feature representation.
+
+**3. Implementing Word Embeddings with Keras Tensorflow:**
+
+In this video, we are going to see a practical implementation of how we can use word embedding and convert a word into vectors. Before going ahead, please remember the vocabulary size and feature dimensions because we are also going to use the same in our code. So let’s quickly open the file. In classification, a folder has already been created. Similarly, in simple RNN, one file is created which is called as embedding.ipynb.
+
+Now, in this embedding file, first of all, we select our kernel quickly and start the code. Some code cells are created, and this is where the code will be written. We are going to use TensorFlow, so in the same virtual environment we will continue working. The first step is: "from tensorflow.keras.preprocessing.text import one_hot"
+
+What we are going to do is perform one-hot representation for a specific word. This one-hot representation was already shown in the previous video. Now, to try some sentences, here is the list of sentences that we are going to use: "The glass of milk", "The glass of juice", "The cup of tea","I am a good boy", "I am a good developer", 
+"Understand the meaning of words", "Your videos are good".
+
+These are the sentences we are specifically going to use. If we go ahead and execute this code with one-hot, we will see the sentences. As mentioned, we need to define the vocabulary size, and we are going to use this word and convert it into vectors. Every word will be converted into vectors.
+
+The vocabulary size considered is 10,000. Now, the first thing to discuss is one-hot representation for every word. The code is written as a list comprehension:"[one_hot(words, vocab_size) for words in sentences]"
+
+This gives the one-hot representation. After execution, you can see the output. For example, the sentence “The glass of milk” is converted into indices in the 10,000 vocabulary size. 
+
+#### The word the is represented by the index 6186, glass by 6775, of by 637, and milk by 4895. This means that if we expand this into a vector of dimension 10,000, at index 637 we will have 1 and the rest will be 0. Similarly for the other words.
+
+#### This is what one-hot representation is: for every word, one index is marked with 1 and the rest are zeros. But we are not going to use the entire sparse vectors (which are mostly zeros) because in our embedding layer we use these indexes instead. So every word in the sentence is represented by one index.
+
+### Now notice something: “The glass of milk” and “The glass of juice.” In these two sentences, the vectors for “the,” “glass,” and “of” remain the same. Only the word “milk” is replaced with “juice,” meaning only the index for the last word changes.
+
+In word embedding, if we take all these vectors and apply PCA (Principal Component Analysis) to reduce, say, 300 dimensions into 2 dimensions, we can plot them. Words like man and human will appear close to each other. Similarly king and queen will be close, woman and queen close, and fruits like apple and mango will also appear nearby. This is very important because cosine similarity can then be applied. Cosine similarity allows us to find which words or vectors are close. This concept is used in recommendation systems. For example, if someone watches an action movie, they should be recommended another action movie.
+
+So, instead of using sparse one-hot vectors, we convert words into indexes and then pass them into the embedding layer.
+
+For that, we import the embedding layer:"from tensorflow.keras.layers import Embedding"
+
+We also need padding, so: "from tensorflow.keras.utils import pad_sequences"
+
+Additionally, we import Sequential:"from tensorflow.keras.models import Sequential"; And also NumPy:"import numpy as np"
+
+Now let us understand what pad_sequences means. Each sentence has a different number of words. Some sentences have four words, some five, some six, etc. For training in an RNN, all sentences must be of equal length, otherwise they cannot be processed at fixed timesteps. To achieve this, we set a maximum sentence length (say, 8) and pad shorter sentences with zeros. For example, if a sentence has 5 words, 3 zeros are added to make it 8. Padding can be pre-padding (zeros added in front) or post-padding (zeros added at the end).
+
+The code:"embedded_docs = pad_sequences(onehot_repr, padding='pre', maxlen=sent_length)"; Now all sentences become equal length. After this, we define the embedding dimension. For example, we set the dimension as 10. This means each word will be represented by a 10-dimensional vector.
+
+Next, we create the embedding model: "model = Sequential()", "model.add(Embedding(vocab_size, 10, input_length=sent_length))"
+
+We then compile the model:"model.compile(optimizer='adam', loss='mse')"
+
+If we check the model summary, we can see the number of parameters and the embedding output shape.
+
+### Params will be the Vocubulary Size
+
+Now we can predict embeddings:"model.predict(embedded_docs)"
+
+#### Very Important: This shows every word represented by a 10-dimensional vector. If we check for the first sentence:"model.predict(embedded_docs[0:1])"
+
+We can see how the words in the first sentence are converted to vectors. The second sentence, where only the last word changes, also produces similar vectors except for the last one.
+
+Thus, the embedding layer works by converting word indexes into dense vector representations. We don’t even need to manually train at this stage because the embedding layer already handles vector creation. It takes the vocabulary size, embedding dimensions, and input length.
+
+#### Summary:
+
+(i) Project Focus - Practical implementation of word embedding to convert words into vectors.
+
+(ii) File Setup - File used: embedding.ipynb in the Simple RNN folder; kernel selected for TensorFlow.
+
+(iii) One-Hot Encoding - Import one_hot from tensorflow.keras.preprocessing.text and convert words in sentences into one-hot indices.
+
+(iv) Example Sentences - ["The glass of milk", "The glass of juice", "The cup of tea", "I am a good boy", "I am a good developer", "Understand the meaning of words", "Your videos are good"].
+
+(v) Vocabulary Size - Defined as 10,000.
+
+(vi) One-Hot Representation - Each word mapped to an index in vocabulary; index corresponds to 1 in a sparse vector, rest are zeros.
+
+(vii) Index Consistency - Words like "the," "glass," "of" retain same index across sentences; only new words get new indices.
+
+(viii) Word Embedding Concept - Sparse one-hot vectors are replaced with dense vector representations in embedding layer.
+
+(ix) PCA & Visualization - Word vectors can be reduced (e.g., 300 → 2 dimensions) to visualize semantic closeness; similar words cluster together.
+
+(x) Cosine Similarity - Used to find closeness of words, applied in recommendation systems (e.g., action movie recommendations).
+
+(xi) TensorFlow Implementation - Import Embedding layer, pad_sequences, Sequential model, and NumPy.
+
+(xii) Padding Sentences - Sentences padded to equal length (e.g., max length = 8) with zeros (pre- or post-padding) to feed into RNN.
+
+(xiii) Embedding Dimension - Each word represented by a 10-dimensional vector.
+
+(xiv) Model Creation - Sequential model created with Embedding(vocab_size, 10, input_length=sent_length).
+
+(xv) Model Compilation - Optimizer: Adam, Loss: MSE.
+
+(xvi) Model Summary - Shows number of parameters and embedding output shape (parameters = vocabulary size × embedding dimension).
+
+(xvii) Predicting Embeddings - model.predict(embedded_docs) shows dense vectors for each word; first sentence and subsequent sentences illustrate consistent embeddings.
+
+(xviii) Key Insight - Embedding layer automatically converts word indices into dense vectors; no manual training required at this stage.
+
+(xix) Usage in Project - Embedding layer will be used in upcoming end-to-end Simple RNN project with a larger dataset.
+
+(xx) Practice Recommendation - Experiment with different sentences and verify embedding outputs before integrating into RNN.
+
+This embedding layer will be used in the upcoming end-to-end project with a bigger dataset, and it will be part of the simple RNN. Hopefully, now you have a clear idea of how the embedding layer works. You can practice with different texts, add more sentences, and verify the outputs, because the same steps will be followed there.
+
+**4. Loading And Understanding IMDB Dataset And Feature Engineering** 
+
+In my previous video, I already showed how to use the embedding layer. Now, let us go step by step and see what kind of deep learning project we are implementing using a simple RNN. As mentioned, we will use the IMDb dataset and perform text classification with a simple RNN.
+
+First, we will use the same environment. Inside the simple RNN folder, we have the end_classification folder, along with the requirements.txt and virtual environment. We will continue using the same setup. Similarly, as we move forward with projects like LSTM, GRU, or other RNN variants, we will create separate folders for each.
+
+Next, we select the kernel and import the required libraries: "import numpy as np", "import tensorflow as tf"
+
+We will use TensorFlow and Keras. The IMDb dataset is available in TensorFlow, so we can load it directly.
+
+"from tensorflow.keras.datasets import imdb"; "from tensorflow.keras.preprocessing import sequence"; "from tensorflow.keras.models import Sequential"; "from tensorflow.keras.layers import Embedding, SimpleRNN, Dense"
+
+Here, Sequential is necessary for building the neural network. The Embedding layer is for word embeddings, SimpleRNN is for recurrent nodes, and Dense is used to create hidden layers with nodes.
+
+Now, let’s load the IMDb dataset. First, we define the vocabulary size, also called max_features: "max_features = 10000"
+
+Next, we load the training and testing datasets:"(x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features)"
+
+We can print the shapes of training and testing datasets to understand the number of records: Training data: 25,000 records, Testing data: 25,000 records
+
+Each review has a label: 0 (negative) or 1 (positive).
+
+Let’s inspect a sample review and its label:"sample_review = x_train[0]"; "sample_label = y_train[0]"
+
+The sample review is a sequence of integers, where each integer represents a word index. The vocabulary size is 10,000, so the integers range accordingly. The label 1 indicates a positive sentiment.
+
+To understand the review in words, we can reverse the word index mapping. First, get the word index from IMDb:"word_index = imdb.get_word_index()"
+
+Then, reverse the dictionary using dictionary comprehension: "reverse_word_index = {value: key for key, value in word_index.items()}"
+
+We can now decode the review from integer indices back to words:"decoded_review = ' '.join([reverse_word_index.get(i - 3, '?') for i in sample_review])"
+
+The decoded review might start with some question marks (if indices are not found) and continues with the actual text like: "This film was just brilliant...". This is just for understanding; for training, we will directly use the one-hot or integer-encoded representation.
+
+Next, we need sequence padding because all reviews have different lengths. This is required for training in RNNs. We will use the pad_sequences function from TensorFlow preprocessing. Assume the maximum review length is 500: "max_length = 500"; "x_train = sequence.pad_sequences(x_train, maxlen=max_length)"
+"x_test = sequence.pad_sequences(x_test, maxlen=max_length)"
+
+By default, pre-padding is applied, which adds zeros to the beginning of sequences to make them uniform in length. For example, checking:"x_train[0]"
+
+We will see that the initial values are zeros, followed by the actual review indices.
+
+At this stage, all transformation techniques are complete, including loading data, integer encoding, and padding. The inputs are now ready for training the simple RNN. The next step, which will be covered in the next video, is to design and train the RNN model using this prepared input.
+
+### Summary:
+
+(i) Project Focus - End-to-end deep learning project using Simple RNN for IMDb text classification.
+
+(ii) Environment Setup - Same environment as previous embedding layer project; folder: simple RNN / end_classification; requirements.txt and virtual environment reused.
+
+(iii) Library Imports - import numpy as np, import tensorflow as tf; TensorFlow and Keras used.
+
+(iv) Keras Modules - Sequential for model building, Embedding for word embeddings, SimpleRNN for recurrent nodes, Dense for hidden layers.
+
+(v) Dataset - IMDb dataset available in TensorFlow: 50,000 movie reviews (25,000 train, 25,000 test).
+
+(vi) Vocabulary Size - Defined as max_features = 10000.
+
+(vii) Load Dataset - (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=max_features).
+
+(viii) Data Labels - 0 = negative review, 1 = positive review.
+
+(ix) Sample Review - sample_review = x_train[0], sample_label = y_train[0]; sequence of integer indices representing words.
+
+(x) Word Index Mapping - word_index = imdb.get_word_index(), reversed using reverse_word_index = {value: key for key, value in word_index.items()}.
+
+(xi) Decode Review - decoded_review = ' '.join([reverse_word_index.get(i - 3, '?') for i in sample_review]) to convert indices back to text.
+
+(xii) Sequence Padding - All reviews padded to uniform length for RNN input; maximum review length = 500.
+
+(xiii) Padding Implementation - x_train = sequence.pad_sequences(x_train, maxlen=max_length), x_test = sequence.pad_sequences(x_test, maxlen=max_length); pre-padding adds zeros at the start.
+
+(xiv) Data Inspection - x_train[0] shows zeros followed by actual review indices.
+
+(xv) Input Ready - After padding and preprocessing, data is ready for training the Simple RNN.
+
+(xvi) Next Step - Design and train the RNN model using the prepared input (covered in the next video).
+
+**5. Training Simple RNN With Embedding Layer**
+
+Now we are going to create our simple RNN neural network and train it using the IMDb dataset. We will also implement early stopping to prevent overfitting and improve generalization. First, we initialize our sequential model with the line "model = Sequential()". This creates an empty model to which we can add layers sequentially.
+
+The first layer we add is the Embedding layer. This layer converts words into dense vectors of fixed size. We define it using "model.add(Embedding(input_dim=max_features, output_dim=128, input_length=max_length))". 
+
+## Here, input_dim is the vocabulary size (max_features), output_dim is the embedding dimension (128), and input_length is the maximum sentence length (max_length). This layer will take the input sequences of word indices and convert each word into a 128-dimensional vector.
+
+Next, we add the SimpleRNN layer using "model.add(SimpleRNN(128, activation='relu'))". This layer has 128 neurons, and we use the ReLU activation function. The SimpleRNN layer processes the sequential data from the embedding layer and captures temporal dependencies in the input sequences.
+
+## Finally, we add a Dense output layer with "model.add(Dense(1, activation='sigmoid'))". Since this is a binary classification problem, we use a single output node with a sigmoid activation function. For multi-class classification, this layer could be replaced with "Dense(num_classes, activation='softmax')".
+
+After constructing the model, we can view its architecture and the number of parameters using "model.summary()". This provides an overview of each layer, the shape of its outputs, and the total trainable parameters.
+
+Before training, we set up early stopping to prevent overfitting. First, we import it with "from tensorflow.keras.callbacks import EarlyStopping". Then we initialize it using "early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)". This monitors the validation loss, and if it does not improve for five epochs, training will stop and restore the best weights.
+
+Next, we compile the model using "model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])". The Adam optimizer is used, the loss function is binary cross-entropy for binary classification, and we track accuracy as a metric.
+
+Finally, we train the model using "history = model.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.2, callbacks=[early_stopping])". Here, we train for a maximum of 10 epochs with a batch size of 32 and use 20% of the training data for validation. The early stopping callback will automatically stop training if the validation loss stops improving. During training, we can observe the loss decreasing and the accuracy increasing. Once training is complete, the model is ready for evaluation or deployment, and we can proceed to create an end-to-end web app using Streamlit.
+
+#### Summary:
+
+(i) Project Focus - Create and train a Simple RNN neural network using the IMDb dataset for text classification.
+
+(ii) Model Initialization - model = Sequential() to create an empty sequential model.
+
+(iii) Embedding Layer - model.add(Embedding(input_dim=max_features, output_dim=128, input_length=max_length)) converts words into 128-dimensional dense vectors.
+
+(a) input_dim = vocabulary size (max_features)
+
+(b) output_dim = embedding dimension (128)
+
+(c) input_length = maximum sentence length (max_length)
+
+(iv) SimpleRNN Layer - model.add(SimpleRNN(128, activation='relu')) processes sequential data, captures temporal dependencies, and has 128 neurons with ReLU activation.
+
+(v) Dense Output Layer - model.add(Dense(1, activation='sigmoid')) for binary classification; single output node with sigmoid activation; Multi-class alternative - Dense(num_classes, activation='softmax').
+
+(vi) Model Summary - model.summary() shows layer architecture, output shapes, and total trainable parameters.
+
+(vii) Early Stopping Setup - from tensorflow.keras.callbacks import EarlyStopping; early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True) prevents overfitting and restores best weights if validation loss stops improving.
+
+(viii) Model Compilation - model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+(a) Adam optimizer
+
+(b) Binary cross-entropy loss for binary classification
+
+(c) Accuracy metric
+
+(ix) Model Training - history = model.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.2, callbacks=[early_stopping])
+
+(a) Maximum 10 epochs
+
+(b) Batch size = 32
+
+(c) Validation split = 20% of training data
+
+(d) Early stopping monitors validation loss
+
+(x) Training Observations - Loss decreases and accuracy increases during training.
+
+(xi) Next Step - Model is ready for evaluation or deployment; can be used to create an end-to-end Streamlit web app.
+
+**6. Prediction From Trained Simple RNN**
+
+"Those are the number of epochs I was able to get a maximum accuracy; The training accuracy was somewhere around 94%.And the validation accuracy was point A, that is 81%.
+If I probably go ahead and do another ten more epochs, I feel that still the accuracy will keep on increasing.Okay, but I just wanted to show you till ten epochs so that, uh, you know, it won't take more time for the training, but initially what I thought, So over here, please focus on this.Loss and accuracy initially loss was shown as a very high value. I got worried okay.And then accuracy increased. Then you can see loss also increased. I think this is a kind of a glitch that has actually happened because after this you will be able to see the loss was in decimals in itself. And this was also getting decreased.Okay.But if you see with respect to validation loss, uh, here, uh there was no glitches as such. So from .59 we came back to .50, which is good enough. Okay. And we are able to achieve the validation accuracy of 81%, which is good enough."
+
+Finally, the training of the simple RNN model has been completed. It took roughly 8 minutes and 8.8 seconds. The training accuracy reached around 94%, while the validation accuracy was about 81%. Although training for more epochs could potentially improve accuracy further, we limited it to 10 epochs to save time. During training, the loss initially appeared high but decreased over time, while validation loss stabilized around 0.50, which is a good sign.
+
+Next, we save the trained model into an H5 file using the line: "model.save("simple_RNN_imdb.h5")"; 
+
+This allows us to load the model later for making predictions or deploying it in a web application. You could also log training metrics with TensorBoard for visualization.
+
+To work with the saved model, we first import the necessary libraries and load the IMDb word index and the reverse word index. Then, the saved H5 model file can be loaded with: "from tensorflow.keras.models import load_model"; "model = load_model("simple_RNN_imdb.h5")"; "model.summary()"
+
+### We can also inspect all weights in the model using "model.get_weights()". Instead of saving the entire model, sometimes we just save the architecture and weights separately and combine them later.
+
+## Two helper functions are required: one for decoding reviews and one for preprocessing input text. Preprocessing involves padding the sequence of word indices using: "sequence.pad_sequences(input_sequence, maxlen=500)"
+
+Here, maxlen=500 corresponds to the maximum sentence length used during training. This step ensures that the input is in the correct format to feed into the RNN.
+
+Next, we define the prediction function: "def predict_sentiment(review):
+    preprocessed_input = preprocess_text(review)
+    prediction = model.predict(preprocessed_input)
+    sentiment = "positive" if prediction[0][0] > 0.5 else "negative"
+    return sentiment, prediction"
+    
+### This function first preprocesses the review, passes it through the model for prediction, and then determines the sentiment based on a threshold of 0.5.
+
+We can test this with an example review: "example_review = "The movie was fantastic, the acting was great, and the plot was thrilling."
+sentiment, score = predict_sentiment(example_review)
+print(f"Review: {example_review}\nSentiment: {sentiment}\nPrediction score: {score[0][0]}")"
+
+The output might show that the sentiment is positive with a prediction score of 0.811, indicating the model’s confidence.
+
+In this step, we successfully trained the simple RNN, saved the model, loaded it for prediction, and achieved good accuracy. The next step would be to create a Streamlit web app to make this an end-to-end application and deploy it on Streamlit Cloud, which will be covered in the next session.
+
+### Summary:
+
+(i) Training Completion:
+
+(a) Simple RNN training completed in roughly 8 minutes and 8.8 seconds.
+
+(b) Training accuracy: ~94%
+
+(c) Validation accuracy: ~81%
+
+(d) Training was limited to 10 epochs to save time, though more epochs could further improve accuracy.
+
+(ii) Training Observations
+
+(a) Initial training loss appeared high but decreased over time.
+
+(b) Validation loss stabilized around 0.50, showing good generalization.
+
+(c) Small glitches in loss were observed initially, but overall trends were stable.
+
+(iii) Model Saving
+
+(a) Trained model saved as an H5 file: model.save("simple_RNN_imdb.h5")
+
+(b) This allows the model to be loaded later for predictions or deployment.
+
+(c) Training metrics can also be logged with TensorBoard for visualization.
+
+(iv) Loading and Inspecting the Model
+
+(a) Import and load model: from tensorflow.keras.models import load_model; model = load_model("simple_RNN_imdb.h5"); model.summary()
+
+(b) Inspect all weights with model.get_weights().
+
+(c) Optionally, architecture and weights can be saved separately for flexibility.
+
+(v) Helper Functions
+
+(a) Decoding reviews: Converts integer-encoded sequences back to words.
+
+(b) Preprocessing input text: Pads sequences to maximum length of 500: "sequence.pad_sequences(input_sequence, maxlen=500)"
+
+(c) Ensures input is in the correct format for RNN.
+
+(vi) Prediction Function: "def predict_sentiment(review):
+    preprocessed_input = preprocess_text(review)
+    prediction = model.predict(preprocessed_input)
+    sentiment = "positive" if prediction[0][0] > 0.5 else "negative"
+    return sentiment, prediction"
+
+(a) Preprocesses review
+
+(b) Passes it through the model
+
+(c) Determines sentiment using a threshold of 0.5
+
+(vii) Testing Prediction: "example_review = "The movie was fantastic, the acting was great, and the plot was thrilling."
+sentiment, score = predict_sentiment(example_review)
+print(f"Review: {example_review}\nSentiment: {sentiment}\nPrediction score: {score[0][0]}")"
+
+(a) Example output: Sentiment = positive, Prediction score = 0.811
+
+(viii) Next Step:
+
+(a) Create a Streamlit web app for end-to-end deployment.
+
+(b) Deploy the model on Streamlit Cloud.
+
+**7. End To End Streamlit Web App Integrated With RNN And deployment**
+
+Now that we have trained our simple RNN, saved the H5 file, and are able to make predictions, the next step is to create our Streamlit app. We start by creating a main.py file where we will combine all the functionality from our previous prediction.ipynb file, including decoding reviews, preprocessing text, and loading the trained model.
+
+First, we import all necessary libraries, including the IMDb dataset, sequence preprocessing utilities, and the load_model function. We also load the word index for converting reviews into vector indices, and we define the helper functions for decoding reviews and preprocessing text.
+
+Next, we define the prediction function exactly as before: def predict_sentiment(review):
+    preprocessed_input = preprocess_text(review)
+    prediction = model.predict(preprocessed_input)
+    sentiment = "positive" if prediction[0][0] > 0.5 else "negative"
+    return sentiment, prediction
+
+After setting up the prediction function, we create the Streamlit app interface. We import Streamlit using: "import streamlit as st"
+
+We add a title and description for the app: "st.title("IMDb Movie Review Sentiment Analysis"); st.write("Enter a movie review to classify it as positive or negative.")"
+
+Next, we create a user input area where users can type their movie review: "user_input = st.text_area("Enter your movie review:")"
+
+We also add a button that triggers the prediction: "if st.button("Classify"):
+    processed_input = preprocess_text(user_input)
+    prediction = model.predict(processed_input)
+    sentiment = "positive" if prediction[0][0] > 0.5 else "negative"
+    st.write(f"Sentiment: {sentiment}")
+    st.write(f"Prediction score: {prediction[0][0]}")
+else:
+    st.write("Please enter a movie review.")" 
+
+This ensures that when the button is clicked, the review is preprocessed, passed through the model, and the sentiment and prediction score are displayed in the app. Optionally, you can also show a sample review using the decode_review helper function.
+
+Finally, to run the app, navigate to the folder containing main.py in your terminal and execute: "streamlit run main.py"
+
+The app will launch in your browser. You can enter a review like: "The movie was fantastic. The acting was great, and the plot was thrilling"
+
+Clicking Classify will display the sentiment as positive with a prediction score, for example 0.811. You can also test a negative review, e.g., "The movie was scary. I did not like it, but the critics liked it."
+
+Even if the review is mixed, the model outputs a prediction score, helping you understand its confidence.
+
+The next step is deployment on Streamlit Cloud. You can upload all files to GitHub and deploy your app directly. This is left as an assignment.
+
+This session demonstrates an end-to-end project workflow: from embeddings, preprocessing, and training a simple RNN, to saving the model as an H5 file, making predictions, and creating a Streamlit web app ready for deployment.
+
+
+### Summary:
+
