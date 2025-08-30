@@ -91,6 +91,8 @@ D) Finding Optimal Hidden Layers And Hidden Neurons In ANN
 
 E) End-to-End RNN Project
 
+F) Predicting Next Word - LSTM and GRU End-to-End Project
+
 ### A) Deep Learning ANN Model with MLFlow
 
 ### 1. Used HyperOpt Library - Used to do Hyperparameter Tuning in ANN
@@ -1429,3 +1431,441 @@ Negative review: "The movie was scary. I did not like it, but the critics liked 
 (b) To saving the model, making predictions,
 
 (c) And finally creating a Streamlit web app ready for deployment.
+
+#### F) Predicting Next Word - LSTM and GRU End-to-End Project
+
+**1. Discussing Problem Statement**
+
+We are continuing our discussion on LSTM and GRU models. In this series, we will develop end-to-end projects, starting with next word prediction using LSTM. The goal is to apply the concepts learned about LSTM practically, implementing them step by step. After completing the LSTM project, we will also solve the same problem using GRU, allowing a comparison of both architectures.
+
+The project overview focuses on building a deep learning model capable of predicting the next word in a sequence. We will use long short-term memory networks, which are particularly well-suited for sequence prediction tasks. The project involves multiple steps, beginning with data collection. We will use the text of Shakespeare’s Hamlet as the dataset. This text is rich and complex, providing a challenging input for our model due to its unique and non-standard English structure.
+
+Next comes data preprocessing. The text will be tokenized, converted into sequences, and padded to ensure uniform length across all sequences. We will also save a pickle file of the processed data for later use. After preprocessing, the sequences will be split into training and test sets to facilitate model evaluation.
+
+The model building phase involves constructing an LSTM model with an embedding layer, two LSTM layers, and a dense output layer with a softmax activation function. This architecture allows the model to predict the probability of the next word in a sequence.
+
+During model training, we will use the prepared sequences to train the model, implementing early stopping to prevent overfitting. Early stopping will monitor the validation loss and stop training when the loss no longer improves. Once the model is trained, we will perform model evaluation using example sentences to assess its ability to predict the next word accurately.
+
+Finally, the project will include deployment using a Streamlit web application. This app will allow users to input a sequence of words and receive the predicted next word in real time, completing an end-to-end workflow from raw text to an interactive application.
+
+To set up the project, we will create a folder named LSTM_RNN and ensure that all required libraries are installed. In particular, we need the NLTK library to work with the Shakespeare dataset. Libraries can be installed using: "pip install -r requirements.txt"
+
+Make sure to download any necessary NLTK datasets in your environment. If you are using a virtual environment, activate it before installation to ensure all dependencies are installed in the correct environment.
+
+In the next step, we will start with data collection and preprocessing, save the processed data as a pickle file, and then move to model building. By the end of this series, you will have a complete end-to-end pipeline, from processing Shakespeare’s text to deploying a Streamlit app for next word prediction.
+
+This session has outlined the problem statement, project setup, and environment requirements. Once NLTK is installed and the folder structure is ready, we will begin the data collection phase in the next video.
+
+#### Summary:
+
+(i) Introduction to LSTM and GRU Projects:
+
+(a) We are continuing with sequence modeling using LSTM and GRU.
+
+(b) The first project focuses on next word prediction using LSTM.
+
+(c) After completing the LSTM project, the same problem will be solved using GRU to compare both architectures.
+
+(ii) Project Overview:
+
+(a) Goal: Build a deep learning model to predict the next word in a sequence.
+
+(b) Model: Long Short-Term Memory (LSTM) networks, suitable for sequence prediction.
+
+(c) Dataset: Text of Shakespeare’s Hamlet - Rich and complex text with non-standard English structures, making it a challenging input.
+
+(iii) Data Preprocessing:
+
+(a) Tokenize the text
+
+(b) Convert text into sequences of word indices.
+
+(c) Pad sequences to ensure uniform length across all sequences.
+
+(d) Save a pickle file of the processed data for later use.
+
+(e) Split sequences into training and test sets for evaluation.
+
+(iv) Model Building:
+
+(a) Architecture - Embedding layer → converts word indices into dense vectors;
+
+Two LSTM layers → capture temporal dependencies in sequences.
+
+Dense output layer with softmax activation → predicts probability of the next word.
+
+(v) Model Training:
+
+(a) Train the LSTM model using the preprocessed sequences.
+
+(b) Implement early stopping to prevent overfitting: Monitors validation loss, Stops training when loss no longer improves
+
+(vi) Model Evaluation - Test the model using example sequences to assess next word prediction accuracy.
+
+(vii) Deployment:
+
+(a) Create a Streamlit web app.
+
+(b) Users can input a sequence of words and receive the predicted next word in real time.
+
+(c) Completes the end-to-end workflow from raw text to an interactive application.
+
+(viii) Project Setup
+
+(a) Create a folder named "LSTM_RNN"
+
+(b) Ensure all required libraries are installed - Includes **"NLTK"** for text preprocessing; Install using: "pip install -r requirements.txt"
+
+(c) Download necessary NLTK datasets in your environment.
+
+(d) Use a virtual environment if needed to keep dependencies isolated.
+
+(ix) Next Steps:
+
+(a) Begin data collection and preprocessing
+
+(b) Save processed data as a pickle file.
+
+(c) Move on to model building and training.
+
+(d) By the end of the series, have a complete end-to-end pipeline from Shakespeare’s text to Streamlit deployment.
+
+**2. Data Collection and Preprocessing:**
+
+We begin the data collection phase by first acquiring the input dataset. For this project, we will use Shakespeare’s Hamlet from the NLTK Gutenberg corpus. We start by importing NLTK and downloading the Gutenberg package: 
+
+"import nltk; nltk.download('gutenberg'); from nltk.corpus import gutenberg; import pandas as pd"
+
+We then load the raw text of Hamlet using: "data = gutenberg.raw('shakespeare-hamlet.txt')"
+
+To save this dataset locally for convenience, we write it into a file: "with open("hamlet.txt", "w") as file: file.write(data)"
+
+Sometimes, circular import errors may occur when importing NLTK modules, so restarting the kernel is recommended. Once executed correctly, the hamlet.txt file is ready for preprocessing. Users without a powerful local machine are advised to use Google Colab, which provides free GPU support.
+
+Next, we move on to data preprocessing. We import necessary libraries for preprocessing and tokenization:
+
+"import numpy as np; 
+from tensorflow.keras.preprocessing.text import Tokenizer; 
+from tensorflow.keras.preprocessing.sequence import pad_sequences; 
+from sklearn.model_selection import train_test_split"
+
+The Tokenizer converts text into numeric sequences, while pad_sequences ensures all sentences have the same length. The train_test_split function is used later to split the dataset into training and testing sets. We read the saved Hamlet text and convert it to lowercase:
+
+"with open("hamlet.txt", "r") as file:text = file.read().lower()"
+
+We initialize the tokenizer and fit it on the text:
+
+"tokenizer = Tokenizer()
+tokenizer.fit_on_texts([text])
+total_words = len(tokenizer.word_index) + 1"
+
+**The tokenizer generates a word index mapping each unique word to a numeric value. This is the foundation for creating input and output sequences for the LSTM model.**
+
+To generate input sequences, we split the text line by line. For each line, we convert the words into numeric sequences using "text_to_sequences":
+
+"input_sequences = []
+for line in text.split('\n'):
+    token_list = tokenizer.texts_to_sequences([line])[0]
+    for i in range(1, len(token_list)):
+        n_gram_sequence = token_list[:i+1]
+        input_sequences.append(n_gram_sequence)"
+
+This approach generates sequences where each word in a line is progressively added, forming n-gram sequences. Every sentence is now represented as a sequence of numeric indexes. To ensure uniform length across sequences, we compute the maximum sequence length and apply padding:
+
+"max_sequence_len = max([len(x) for x in input_sequences])
+input_sequences = np.array(pad_sequences(input_sequences, maxlen=max_sequence_len, padding='pre'))"
+
+Here, sequences are pre-padded with zeros to make them equal in length.
+
+Once input sequences are ready, we split them into predictors (X) and labels (y). The predictors contain all words except the last one, while the label contains only the last word:
+
+"X = input_sequences[:,:-1]
+y = input_sequences[:,-1]"
+
+We then convert the labels into one-hot encoded vectors using: "y = tf.keras.utils.to_categorical(y, num_classes=total_words)"
+
+This ensures the output is compatible with categorical prediction in the LSTM model. Finally, we split the dataset into training and test sets:
+
+"X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)"
+
+**At this point, the dataset is fully preprocessed: the input features are sequences of indexes, the output features are one-hot encoded, and the sequences are padded to uniform length. The data is now ready for training the LSTM RNN, which will be covered in the next video.**
+
+### Summary:
+
+(i) Data Collection:
+
+(a) We begin by acquiring the Hamlet text from the NLTK Gutenberg corpus.
+
+(b) Import the required libraries and download the dataset:
+
+"import nltk;
+nltk.download('gutenberg'); 
+from nltk.corpus import gutenberg; 
+import pandas as pd"
+
+(c) Load the raw text of Hamlet: "data = gutenberg.raw('shakespeare-hamlet.txt')"
+
+(d) Save the dataset locally for convenience: "with open("hamlet.txt", "w") as file:
+    file.write(data)"
+
+Sometimes circular import errors occur when importing NLTK modules → restarting the kernel usually fixes it; If the system is not powerful enough, it is recommended to use Google Colab (provides free GPU).
+
+(ii) Preprocessing Setup:
+
+(a) Import the necessary libraries for preprocessing and tokenization:- 
+
+"import numpy as np
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from sklearn.model_selection import train_test_split"
+
+(b) Purpose of each library:
+
+"Tokenizer" → converts words into numeric indices.
+
+"pad_sequences" → makes all sequences the same length.
+
+"train_test_split" → splits dataset into training and test sets.
+
+(iii) Text Cleaning:
+
+(a) Read the saved Hamlet text and convert it to lowercase (to reduce vocabulary size): "with open("hamlet.txt", "r") as file:
+    text = file.read().lower()"
+
+(iv) Tokenization:
+
+(a) Initialize and fit the tokenizer on the text:
+
+"tokenizer = Tokenizer()
+tokenizer.fit_on_texts([text])
+total_words = len(tokenizer.word_index) + 1"
+
+(b) Explanation: The tokenizer assigns a unique index to each word; "total_words" gives the vocabulary size, which will be required later for one-hot encoding and the embedding layer.
+
+(v) Sequence Generation: 
+
+(a) Generate n-gram input sequences for training:
+
+"input_sequences = []
+for line in text.split('\n'):
+    token_list = tokenizer.texts_to_sequences([line])[0]
+    for i in range(1, len(token_list)):
+        n_gram_sequence = token_list[:i+1]
+        input_sequences.append(n_gram_sequence)"
+
+(b) Explanation:
+
+Each line of the text is tokenized.
+
+For each line, progressively build sequences (n-grams).
+
+Example: “to be or not” → [to], [to, be], [to, be, or], [to, be, or, not].
+
+(vi) Padding Sequences:
+
+(a) Find the maximum sequence length: "max_sequence_len = max([len(x) for x in input_sequences])"
+
+(b) Pad all sequences to the same length (using pre-padding with zeros): input_sequences = np.array(
+    pad_sequences(input_sequences, maxlen=max_sequence_len, padding='pre')
+)"
+
+(c) Explanation: Padding ensures the model can process the data in fixed-length format; Shorter sequences are padded with zeros at the beginning.
+
+(vii) Feature and Label Creation:
+
+(a) Separate predictors (X) and labels (y): "X = input_sequences[:,:-1]
+y = input_sequences[:,-1]" 
+
+(b) Convert labels into one-hot encoded vectors: "import tensorflow as tf
+y = tf.keras.utils.to_categorical(y, num_classes=total_words)"
+
+(c) Explanation:
+
+"X" contains all words except the last one in each sequence.
+
+"y" contains the last word (the next word we want to predict).
+
+One-hot encoding transforms labels into vectors, required for categorical prediction.
+
+(viii) Train-Test Split:
+
+(a) Finally, split the dataset into training and test sets: "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)"
+
+(b) Explanation: 80% data is used for training, 20% for testing; This ensures the model can be evaluated properly.
+
+(ix) Outcome: 
+
+(a) X (input): padded word index sequences.
+
+(b) y (labels): one-hot encoded next word.
+
+(c) Data is fully preprocessed and ready for training the LSTM RNN model.
+
+**3. LSTM Neural Network Model Training**
+
+Now that we have completed the data preprocessing and ingestion part, it is time to build and train our LSTM RNN model. To begin, we import the required modules from Keras. Specifically, we will use the Sequential API to construct the model, and layers such as Embedding, LSTM, Dense, and Dropout. Dropout plays a critical role in preventing overfitting by randomly disabling a percentage of neurons during training.
+
+We start the process by defining the model architecture. First, we initialize the model:
+"model = Sequential()"
+
+Next, we add the Embedding layer, which will convert the integer sequences into dense vectors. The embedding layer is defined as:
+"model.add(Embedding(total_words, 100, input_length=max_sequence_len-1))"
+
+Here, total_words represents the vocabulary size, the embedding dimension is set to 100, and the input length is set to max_sequence_len - 1. The subtraction by one is necessary to ensure compatibility between predictors and labels, as the labels are derived from the last word of each sequence.
+
+Following the embedding layer, we add our first LSTM layer with 150 neurons:
+"model.add(LSTM(150, return_sequences=True))"
+
+The argument return_sequences=True ensures that the full sequence of outputs is passed to the next layer. To reduce the chances of overfitting, we then include a Dropout layer:
+"model.add(Dropout(0.2))"
+
+This disables 20% of the neurons during training. After dropout, we add another LSTM layer with 100 neurons:
+"model.add(LSTM(100))"
+
+Finally, we define the output layer using a Dense layer with softmax activation. Since this is a multi-class classification problem, softmax is required to produce probability distributions across all possible words:
+"model.add(Dense(total_words, activation='softmax'))"
+
+Once the architecture is defined, we proceed to compile the model. We use categorical crossentropy as the loss function because the task is multi-class classification. The optimizer chosen is Adam, and the performance metric is accuracy:
+"model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])"
+
+At this stage, we can check the model summary with:
+"model.summary()"
+
+This displays the structure of the embedding, LSTM, dropout, and output layers, along with the total number of trainable parameters, which in this case is approximately 1.2 million.
+
+With the model ready, we now proceed to train it. We fit the model on the training data, specifying the number of epochs and validation data for monitoring. For demonstration, we run the training for 50 epochs:
+"history = model.fit(X_train, y_train, epochs=50, validation_data=(X_test, y_test), verbose=1)"
+
+Since the dataset (Hamlet) is highly complex, the accuracy may initially appear low (around 3–5%). However, as training progresses, both accuracy increases and loss decreases. For better performance, it is advisable to extend training to at least 100 epochs or more.
+
+During training, we may encounter a shape mismatch error between the input layer and sequence length. This occurs because the maximum sequence length was not adjusted correctly. The solution is to set the input length as max_sequence_len - 1, since the predictors exclude the final word of each sequence.
+
+To improve training efficiency, we can also apply early stopping. This stops training automatically when the validation loss stops improving. To implement early stopping, we first import it:
+"from tensorflow.keras.callbacks import EarlyStopping"
+
+Then, when calling the fit function, we add the callback:
+"early_stop = EarlyStopping(monitor='val_loss', patience=3)"; 
+"history = model.fit(X_train, y_train, epochs=100, validation_data=(X_test, y_test), callbacks=[early_stop], verbose=1)"
+
+This ensures the model does not overfit and training stops as soon as performance plateaus.
+
+Once training is complete, we will move on to prediction and evaluation, where we test the model’s ability to generate the next word in a sequence. With sufficient training, the model learns to capture the language structure of Hamlet and begins predicting meaningful continuations.
+
+**4. Prediction from LSTM Model:**
+
+After training the model for 50 epochs, the accuracy reached around 40%, which is an improvement from the initial 3%. If we extend training to 100 or more epochs, the accuracy is expected to increase further. Now that we have a reasonably trained model, the next step is to create a function that can predict the next word in a given sequence.
+
+To do this, we define a function called predict_next_word. The function takes the model, tokenizer, input text, and maximum sequence length as inputs. Inside the function, we first tokenize the input text and convert it into a sequence of integers using the tokenizer. If the length of the tokenized list is greater than or equal to the maximum sequence length, we trim it to ensure it matches "max_sequence_len - 1".
+
+Once we have the correct sequence, we apply padding using pre-padding so that the sequence length is consistent with what the model expects:
+"token_list = pad_sequences([token_list], maxlen=max_sequence_len-1, padding='pre')"
+
+We then pass this padded sequence into the trained model using:
+"predicted = model.predict(token_list, verbose=0)"
+
+The model returns probabilities for all possible words. To get the predicted word, we take the index of the word with the highest probability:
+"predicted_word_index = np.argmax(predicted)"
+
+Finally, we map this index back to the actual word by searching through the tokenizer’s word index. For example:
+"for word, index in tokenizer.word_index.items():
+if index == predicted_word_index:
+return word"
+
+With this function ready, we can test it on example inputs. Suppose our input text is “to be or not to be”. We run the function as follows:
+"next_word = predict_next_word(model, tokenizer, input_text, max_sequence_len)"
+"print(f'Input text: {input_text} → Predicted next word: {next_word}')"
+
+The output might be something like “to be or not to be considered”, which shows that the model has successfully learned patterns from the dataset.
+
+Once we confirm that predictions are working, the next step is to save the trained model and tokenizer. The model can be saved in H5 format using:
+"model.save('next_word_LSTM.h5')"
+
+Since the tokenizer is equally important, we store it using the Python pickle module:
+"import pickle
+with open('tokenizer.pickle', 'wb') as handle:
+pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)"
+
+This ensures that when we deploy or reuse the model, we use the exact same tokenizer that was employed during training. After saving, you will find two files in your working directory — next_word_LSTM.h5 and tokenizer.pickle.
+
+Now we can experiment with additional test sentences. For example:
+
+Input: “to be bad is better than” → Predicted next word: “and”
+
+Input: “tis but our” → Predicted next word: “fantasy”
+
+As seen, the model sometimes generates meaningful words, while at other times the predictions may be less accurate due to limited training epochs. With more training, the results should improve.
+
+Finally, this model and tokenizer can be integrated into a Streamlit app to create a complete end-to-end project. The app would load the H5 model and tokenizer, allow users to input text, and display the predicted next word. This will form the practical deployment of our work, which we will cover in the next step.
+
+**5.  Streamlit Webapp Integration With LSTM Trained Model**
+
+Now that we have trained our model and tested predictions in a notebook, the next step is to create an end-to-end web application using Streamlit. For this, we will create a new file inside the "LSTM_RNN" folder called "app.py". This file will contain all the necessary code for the user interface and prediction functionality.
+
+The first step in "app.py" is to import all required libraries. We will need pickle for loading the tokenizer, numpy for numerical computations, streamlit for building the web interface, load_model from Keras to load the trained .h5 file, and pad_sequences to handle sequence padding. The imports look like this:
+
+"import pickle  
+import numpy as np  
+import streamlit as st  
+from keras.models import load_model  
+from keras.preprocessing.sequence import pad_sequences"
+
+Next, we load the trained model and tokenizer. The model is loaded from the ".h5" file, while the tokenizer is loaded from the "tokenizer.pickle" file:
+
+"model = load_model("next_word_LSTM.h5")  
+
+with open("tokenizer.pickle", "rb") as handle:  
+    tokenizer = pickle.load(handle)"
+
+After loading the model and tokenizer, we reuse the same prediction function that was created earlier in the notebook. This function takes the model, tokenizer, input text, and maximum sequence length as inputs, then processes the text, pads it, and uses the model to predict the next word. We can simply copy this function into our app.py file.
+
+Once the backend is ready, we can begin building the Streamlit UI. We start by giving the app a title:
+
+"st.title("Next Word Prediction with LSTM and Early Stopping")"
+
+Then we create a text input field for the user to enter a sequence of words. By default, we can pre-fill it with a common example:
+
+"input_text = st.text_input("Enter a sequence of words:", "to be or not to be")"
+
+Next, we add a button that triggers the prediction when clicked:
+
+"if st.button("Predict Next Word"):  
+    max_sequence_len = model.input_shape[1] + 1  
+    next_word = predict_next_word(model, tokenizer, input_text, max_sequence_len)  
+    st.write(f"Predicted next word: **{next_word}**")"
+
+Now we can run the Streamlit app from the command line. Navigate to the LSTM project folder and execute:
+"streamlit run app.py"
+
+When the application runs, it will take some time to load the model and tokenizer into memory. Once loaded, the web interface will display a title, a text input box, and a button. For example, entering “to be or not to be” and clicking the button might return “considered” or “crack”, depending on the trained model.
+
+We can also try out different inputs to see how the model performs. For example:
+
+(i) Input: “Well, good night if you do meet” → Prediction: “two”
+
+(ii) Input: “Welcome” → Prediction: “friends”
+
+(iii) Input: “Tis but our” → Prediction: “fantasy”
+
+These predictions demonstrate that the model is able to generate contextually relevant words, although accuracy will improve if we train for more epochs. At the current stage, with only 50 epochs, the model sometimes produces unexpected results. Training for another 50 epochs should enhance performance significantly.
+
+With this, we have completed the end-to-end LSTM next word prediction project. We successfully trained the model, created a prediction function, saved the model and tokenizer, and deployed everything using a Streamlit web app. Users can now interact with the model directly through the browser, making this a practical and deployable deep learning solution.
+
+**6. GRU RNN Variant Practical Implementation**
+
+Now, let us see how the same project can be implemented using a GRU-based RNN. The overall structure remains the same as with the LSTM-based RNN, but the key difference lies in the type of recurrent layer used. In the earlier implementation, we made use of the LSTM layer. To switch to GRU, you simply need to import the GRU class from Keras and replace the LSTM layer with it.
+
+For example, in your code, wherever you used the LSTM layer: "from keras.layers import LSTM"
+
+Replace with "from keras.layers import GRU"
+
+Similarly, when adding the recurrent layer to the model, instead of writing: "model.add(LSTM(128, return_sequences=True))"
+
+Replace with "model.add(GRU(128, return_sequences=True))"
+
+This is the only structural change needed in the architecture. The rest of the preprocessing, embedding, and dense layers remain the same. Once this modification is made, you can go ahead and train the model just like you did with the LSTM version.
+
+GRU, or Gated Recurrent Unit, is essentially a simplified variant of LSTM. It contains fewer gates than LSTM, which makes it computationally more efficient while still being effective for many sequence modeling tasks. The main advantage of GRU is that it requires fewer parameters and, therefore, can train faster. However, in practice, both GRU and LSTM can perform quite similarly depending on the dataset and problem.
+
+As an assignment, you can now re-implement the entire project using GRU instead of LSTM. Train both versions of the model and compare their performance in terms of accuracy and loss. This exercise will give you a better understanding of the trade-offs between the two architectures.
+
+
